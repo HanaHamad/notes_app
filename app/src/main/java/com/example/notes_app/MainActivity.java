@@ -23,32 +23,25 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Adapter.ItemClickListener, Adapter.ItemClickListener2{
+public class MainActivity extends AppCompatActivity{
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     ArrayList<Note> note;
     Adapter adapter;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     RecyclerView recycler;
-    ImageView delete;
-    ImageView updateNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        updateNote = findViewById(R.id.update);
         recycler = findViewById(R.id.recycler);
         note = new ArrayList<Note>();
-        adapter = new Adapter(this, note, this, this);
-        delete = findViewById(R.id.delete);
-
 
         GetAllNots();
     }
     private void GetAllNots() {
-
         db.collection("Notes").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -83,51 +76,4 @@ public class MainActivity extends AppCompatActivity implements Adapter.ItemClick
                 });
     }
 
-    public void Delete(final Note user) {
-        db.collection("Notes").document(user.getId())
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.e("Hanaa", "deleted");
-                        note.remove(user);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Hanaa", "fail");
-                    }
-                });
-    }
-    public void update(final Note note) {
-
-                        updateNote = findViewById(R.id.update);
-
-                        db.collection("Notes")
-                                .document(note.getId()).update("content", updateNote.toString())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("Hanaa", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("Hanaa", "Error updating document", e);
-                                    }
-                                });
-                    }
-
-    @Override
-    public void onItemClick(int position, String id) {
-        Delete(note.get(position));
-    }
-
-    @Override
-    public void onItemClick2(int position, String id) {
-        update(note.get(position));
-
-    }
 }
