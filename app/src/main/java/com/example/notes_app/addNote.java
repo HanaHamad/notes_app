@@ -55,24 +55,24 @@ public class addNote extends AppCompatActivity {
     public void saveToFirebase(View v) {
         String noteTitle = titleNote.getText().toString();
         String noteContent = contentNote.getText().toString();
-        Map<String, Object> user = new HashMap<>();
+        Map<String, Object> note = new HashMap<>();
         if(!noteTitle.isEmpty() && !noteContent.isEmpty()) {
-            user.put("title",noteTitle);
-            user.put("content",noteContent);
+            note.put("title",noteTitle);
+            note.put("content",noteContent);
 
-            db.collection("users")
-                    .add(user)
+            db.collection("Notes")
+                    .add(note)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            Log.e("dareen", "Data added successfully to database: ");
+                            Log.e("Hanaa", "Data added successfully to database: ");
                             openSecondSecreen();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.e("dareen", "Failed to add database", e);
+                            Log.e("Hanaa", "Failed to add database", e);
                         }
                     });
 

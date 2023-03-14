@@ -26,10 +26,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements Adapter.ItemClickListener, Adapter.ItemClickListener2{
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    ArrayList<Note> items;
+    ArrayList<Note> note;
     Adapter adapter;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-    RecyclerView rv;
+    RecyclerView recycler;
     ImageView delete;
     ImageView updateNote;
 
@@ -39,22 +39,22 @@ public class MainActivity extends AppCompatActivity implements Adapter.ItemClick
         setContentView(R.layout.activity_main);
 
         updateNote = findViewById(R.id.update);
-        rv = findViewById(R.id.recycler);
-        items = new ArrayList<Note>();
-        adapter = new Adapter(this, items, this, this);
+        recycler = findViewById(R.id.recycler);
+        note = new ArrayList<Note>();
+        adapter = new Adapter(this, note, this, this);
         delete = findViewById(R.id.delete);
 
 
-        GetAllUserss();
+        GetAllNots();
     }
-    private void GetAllUserss() {
+    private void GetAllNots() {
 
-        db.collection("Users").get()
+        db.collection("Notes").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if (documentSnapshots.isEmpty()) {
-                            Log.d("drn", "onSuccess: LIST EMPTY");
+                            Log.d("Hanaa", "onSuccess: LIST EMPTY");
                             return;
                         } else {
                             for (DocumentSnapshot documentSnapshot : documentSnapshots) {
@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity implements Adapter.ItemClick
                                     String title = documentSnapshot.getString("title");
                                     String content = documentSnapshot.getString("content");
                                     Note user = new Note(id, title , content);
-                                    items.add(user);
-                                    rv.setLayoutManager(layoutManager);
-                                    rv.setHasFixedSize(true);
-                                    rv.setAdapter(adapter);
+                                    note.add(user);
+                                    recycler.setLayoutManager(layoutManager);
+                                    recycler.setHasFixedSize(true);
+                                    recycler.setAdapter(adapter);
                                     adapter.notifyDataSetChanged();
-                                    Log.e("LogDATA", items.toString());
+                                    Log.e("LogDATA", note.toString());
                                 }
                             }
                         }
@@ -83,53 +83,51 @@ public class MainActivity extends AppCompatActivity implements Adapter.ItemClick
                 });
     }
 
-
     public void Delete(final Note user) {
-        db.collection("Users").document(user.getId())
+        db.collection("Notes").document(user.getId())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.e("dareen", "deleted");
-                        items.remove(user);
+                        Log.e("Hanaa", "deleted");
+                        note.remove(user);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("dareen", "fail");
+                        Log.e("Hanaa", "fail");
                     }
                 });
     }
-
-
-    public void update(final Note user) {
+    public void update(final Note note) {
 
                         updateNote = findViewById(R.id.update);
 
-                        db.collection("Users").document(user.getId()).update("User Name", updateNote.toString())
+                        db.collection("Notes")
+                                .document(note.getId()).update("content", updateNote.toString())
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d("dareen", "DocumentSnapshot successfully updated!");
+                                        Log.d("Hanaa", "DocumentSnapshot successfully updated!");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.w("dareen", "Error updating document", e);
+                                        Log.w("Hanaa", "Error updating document", e);
                                     }
                                 });
                     }
 
     @Override
     public void onItemClick(int position, String id) {
-        Delete(items.get(position));
+        Delete(note.get(position));
     }
 
     @Override
     public void onItemClick2(int position, String id) {
-        update(items.get(position));
+        update(note.get(position));
 
     }
 }
